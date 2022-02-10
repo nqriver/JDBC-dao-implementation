@@ -3,7 +3,7 @@ package com.myproject.jdbctest;
 import java.sql.*;
 
 
-public class LoadDriver {
+public class JdbcSelectDemo {
 
     private static final String sqlSelectAllPersons = "SELECT * FROM employees";
     private static final String setJohnAsJohnny = "UPDATE EMPLOYEES SET FIRST_NAME = ? WHERE FIRST_NAME = ?";
@@ -12,16 +12,11 @@ public class LoadDriver {
     private static final String username = "lukas";
 
     public static void main(String[] args) {
-        try {
-            Connection conn = DriverManager.getConnection(dbUrl, username, password);
-            PreparedStatement updateStatement = conn.prepareStatement(setJohnAsJohnny);
-            updateStatement.setString(1, "Johnny");
-            updateStatement.setString(2, "John");
-
-            updateStatement.executeUpdate();
-
-            PreparedStatement ps = conn.prepareStatement(sqlSelectAllPersons);
-            ResultSet rs = ps.executeQuery();
+        try (
+                Connection conn = DriverManager.getConnection(dbUrl, username, password);
+                PreparedStatement ps = conn.prepareStatement(sqlSelectAllPersons);
+                ResultSet rs = ps.executeQuery()
+        ) {
 
             while (rs.next()) {
                 long id = rs.getLong("ID");
@@ -29,14 +24,13 @@ public class LoadDriver {
                 String first_name = rs.getString("FIRST_NAME");
                 String email = rs.getString("EMAIL");
                 String department = rs.getString("DEPARTMENT");
-                    double salary = rs.getDouble("SALARY");
+                double salary = rs.getDouble("SALARY");
 
-                    System.out.printf("We have got you: %s %s\n", first_name, lastName);
-                }
-
-            } catch(SQLException e){
-                e.printStackTrace();
+                System.out.printf("We have got you: %s %s\n", first_name, lastName);
             }
 
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
+}
