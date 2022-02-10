@@ -3,10 +3,7 @@ package com.myproject.jdbctest.dao;
 import com.myproject.jdbctest.model.Employee;
 import com.myproject.jdbctest.dao.exception.DAOException;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -121,6 +118,40 @@ public class EmployeeDaoJdbc implements EmployeeDAO {
     @Override
     public boolean existEmail(String email) throws DAOException {
         return false;
+    }
+
+    @Override
+    public void increaseSalaries(String department, Double payRaiseValue) {
+        try (
+                Connection connection = daoFactory.getConnection();
+                CallableStatement increaseStatement = connection.prepareCall(
+                        "{call increase_salaries_for_department(?, ?)}");
+        ) {
+            increaseStatement.setString(1, department);
+            increaseStatement.setDouble(2, payRaiseValue);
+            increaseStatement.execute();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public int getCountForDepartment(String department) {
+        int employeesCount = 0;
+        try (
+                Connection connection = daoFactory.getConnection();
+                CallableStatement statement = connection.prepareCall(
+                        "{call get_count_for_department(?,?)}");
+        ) {
+            statement.setString(1, department);
+            statement.registerOutParameter(2, Types.INTEGER);
+            statement.execute();
+            employeesCount = statement.getInt(2);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return employeesCount;
     }
 
     private static Employee map(ResultSet resultSet) throws SQLException {

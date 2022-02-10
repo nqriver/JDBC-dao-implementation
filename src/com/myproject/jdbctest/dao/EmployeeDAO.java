@@ -19,8 +19,7 @@ public interface EmployeeDAO {
 
     boolean existEmail(String email) throws DAOException;
 
+    void increaseSalaries(String department, Double payRaiseValue);
 
-
-
-
+    int getCountForDepartment(String department);
 }

@@ -17,6 +17,10 @@ public class DaoTest {
         employee.setFirstName("Lukas");
         employee.setLastName("Karas");
         employee.setSalary(9000.0);
-        employeeDAO.create(employee);
+//        employeeDAO.create(employee);
+
+
+        System.out.println(employeeDAO.getCountForDepartment("IT"));
+//        employeeDAO.increaseSalaries("IT", 1000.0);
     }
 }
